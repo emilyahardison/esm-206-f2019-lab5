@@ -1,0 +1,61 @@
+---
+title: "ESM 206 Lab 5"
+author: "Emily Hardison"
+date: "10/29/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##### Lab 5 Objectives
+- Learn how to parse dates with 'lubridate'
+-Get counts of observations with count
+- Uncount Rows
+-ONe and two sample T-test
+-Create a heatmap with geom_tile
+
+```{r, include = FALSE}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+
+lobster_abundance <- read_csv(here::here("data", "lobster_abundance.csv"), na = "-99999") %>% 
+  janitor::clean_names()
+  
+  
+```
+
+Use the tidyr::uncount() function to convret the lobster data from frequency format to case format
+
+```{r}
+lobster_tidy <- lobster_abundance %>% 
+  tidyr::uncount(lobster_count) # This function will make it so that every individual lobster has it's own count column 
+```
+
+#### Exploratory Data Visualization
+
+We are only going to consider site as our variable of interest
+
+```{r}
+ggplot(data = lobster_tidy, aes(x = site, y = size_mm))+
+  geom_jitter(aes(color = site), alpha=0.5)
+
+# histogram
+
+ggplot(data = lobster_tidy, aes(x = size_mm))+
+  geom_histogram(aes(fill = site))+
+  facet_wrap(~site, scales = "free")
+
+# qqplot
+
+ggplot(data = lobster_tidy, aes(sample = size_mm))+
+  geom_qq()+
+  facet_wrap(~site, scales = "free")
+
+
+```
+
+Overall, you are looking for a linear relationship on the qq plot to determine that it is "normal". Remember to group by your treatment groups when determining the distribution.
+
